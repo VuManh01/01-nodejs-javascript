@@ -21,6 +21,36 @@ const createUserService = async (name, email, password) => {
     return null;
   }
 };
+
+const LoginService = async (email1, password) => {
+  try {
+    //fetch user by email
+    const user = await User.findOne({ email: email1 });
+    if (user) {
+      //compare password
+      console.log(">> check user:", user);
+      const isMatchPassword = await bcrypt.compare(password, user.password);
+      if (!isMatchPassword) {
+        return {
+          ErrorCode: 2,
+          ErrorMessage: "Emiail/Password không hợp lệ ",
+        };
+      } else {
+        //create an access token
+        return "creat an access token";
+      }
+    } else {
+      return {
+        ErrorCode: 1,
+        ErrorMessage: "Emiail/Password không hợp lệ ",
+      };
+    }
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
 module.exports = {
   createUserService,
+  LoginService,
 };
