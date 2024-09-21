@@ -77,7 +77,7 @@ const LoginService = async (email1, password) => {
 
 const getUserService = async () => {
   try {
-    let result = await User.find({});
+    let result = await User.find({}).select("-password"); //ẩn mật khẩu bên postman
     return result;
   } catch (error) {
     console.log(error);
