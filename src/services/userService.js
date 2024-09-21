@@ -1,6 +1,8 @@
+require("dotenv").config();
 const User = require("../models/user");
-
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
 const saltRounds = 10;
 
 const createUserService = async (name, email, password) => {
@@ -28,7 +30,6 @@ const LoginService = async (email1, password) => {
     const user = await User.findOne({ email: email1 });
     if (user) {
       //compare password
-      console.log(">> check user:", user);
       const isMatchPassword = await bcrypt.compare(password, user.password);
       if (!isMatchPassword) {
         return {
@@ -37,7 +38,21 @@ const LoginService = async (email1, password) => {
         };
       } else {
         //create an access token
-        return "creat an access token";
+        const payload = {
+          email: user.email,
+          name: user.name,
+        };
+
+        const access_token = jwt.sign(payload, process.env.JWT_SECRET, {
+          expiresIn: process.env.JWT_EXPIRE,
+        });
+        return {
+          access_token,
+          user: {
+            email: user.email,
+            name: user.name,
+          },
+        };
       }
     } else {
       return {
