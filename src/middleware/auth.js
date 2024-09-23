@@ -7,12 +7,19 @@ const auth = (req, res, next) => {
   if (white_lists.find((item) => "/v1/api" + item === req.originalUrl)) {
     next();
   } else {
+    //Bước 1: lấy phần token ra
     if (req?.headers?.authorization?.split(" ")?.[1]) {
       const token = req.headers.authorization.split(" ")[1];
 
       //verify token
       try {
+        //Bước 2: Giả mã token xem người dùng ai đang đăng nhệp
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = {
+          email: decoded.email,
+          name: decoded.name,
+          createdBy: "hoidanit",
+        };
         console.log(">>> check token: ", decoded);
         next();
       } catch (error) {
